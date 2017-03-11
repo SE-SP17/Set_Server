@@ -14,9 +14,7 @@ public class SetServer {
 	public static SetServer master;
 
 	private static final int MAX_CLIENTS = 2;
-	private int connected;
 	ServerSocket ss_listening;
-	private List<ServerThread> threads;
 
 	public static void main(String[] args) {
 		System.out.println("Hello world!");
@@ -30,9 +28,6 @@ public class SetServer {
 	}
 
 	public SetServer(String hostname, int port, int max_clients) {
-		connected = 0;
-		threads = new ArrayList<ServerThread>();
-		//threads = Collections.synchronizedList(new ArrayList<ServerThread>());
 
 		try {
 			ss_listening = new ServerSocket(port);
@@ -42,38 +37,8 @@ public class SetServer {
 			while (true) {
 				s = ss_listening.accept();
 				
-				// Synchronous operation
-				/*
-				for(ServerThread st_i: threads){
-					if(st_i.isClosed()){
-						System.err.printf("%d: Connection from %s dropped.\n", 0, s.getInetAddress().getHostAddress());
-						threads.remove(st_i);
-					}
-				}
-				*/
-
-				for(Iterator<ServerThread> it = threads.iterator(); it.hasNext();){
-					ServerThread st_i = it.next();
-					if(st_i.isClosed()){
-						System.err.printf("%d: Connection from %s dropped.\n", 0, st_i.getSocket().getInetAddress().getHostAddress());
-						it.remove();
-					}
-				}
-
-				if (threads.size() < max_clients) {
-					ServerThread st = new ServerThread(s);
-					threads.add(st);
-					st.start();
-					System.out.printf("%d: A connection from %s! Accepted.\n", threads.size(),
-							s.getInetAddress().getHostAddress());
-				} else {
-					System.err.printf("Max connection limit of %d reached! Ignoring further connections...\n", max_clients);
-					DataOutputStream bleh = new DataOutputStream(s.getOutputStream());
-					bleh.writeBytes("Server's connection limit reached. Please try again later.\r\n");
-					bleh.flush();
-					bleh.close();
-					s.close();
-				}
+				System.out.printf("A connection from %s! Accepted.\n", s.getInetAddress().getHostAddress());
+				new ServerThread(s).start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
