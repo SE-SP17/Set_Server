@@ -3,8 +3,10 @@ package edu.cooper.ee.se.sp17.server;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -16,6 +18,7 @@ public class SetServer {
 	private int max_clients;
 
 	private static final int MAX_CLIENTS = 255;
+	private static final int MAX_GAMES = 255;
 
 	public static final int L_ERR_ALRDY_IN = -2;
 	public static final int L_ERR_INVALID_CREDS = -3;
@@ -24,8 +27,9 @@ public class SetServer {
 	public static final int R_ERR_USER_EXISTS = -1;
 	public static final int R_ERR_INTERNAL = -2;
 
-	ServerSocket ss_listening;
-	ArrayList<ServerThread> threads;
+	private ServerSocket ss_listening;
+	private ArrayList<ServerThread> threads;
+	private HashMap<Integer, SetGame> games;
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
@@ -49,6 +53,7 @@ public class SetServer {
 		this.port = port;
 		this.max_clients = max_clients;
 		threads = new ArrayList<ServerThread>(max_clients);
+		games = new HashMap<Integer, SetGame>(MAX_GAMES);
 
 		try {
 			ss_listening = new ServerSocket(port);
@@ -131,6 +136,10 @@ public class SetServer {
 
 		return 0;
 	}
+	
+	public HashMap<Integer, SetGame> getGames(){
+		return games;
+	}
 
 	public String getValue(String name) {
 		// Query database
@@ -147,5 +156,22 @@ public class SetServer {
 		// but index changes as elements are added/removed
 		System.out.printf("A Connection terminated\n");
 		threads.remove(st);
+	}
+
+	public String getUsernameFromId(int uid) {
+		for (ServerThread st : threads) {
+			if (st.getUid() == uid) {
+				return st.getUsername();
+			}
+		}
+
+		return null;
+	}
+	
+	public int addGame(SetGame sg){
+		// How to find open key value?
+		int gid = 1;
+		games.put(gid, sg);
+		return gid;
 	}
 }

@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ServerThread extends Thread {
 	private Socket sock;
@@ -15,10 +18,13 @@ public class ServerThread extends Thread {
 	private String username;
 	private int uid;
 
+	private int gid;
+
 	public ServerThread(Socket s) {
 		sock = s;
 		username = null;
 		uid = -1;
+		gid = -1;
 	}
 
 	public void run() {
@@ -55,6 +61,20 @@ public class ServerThread extends Thread {
 					println("User " + username + " has uid of " + uid);
 				} else if (words[0].toUpperCase().equals("LOGOUT")) {
 					println(logout());
+				} else if (words[0].toUpperCase().equals("GAMES")) {
+					print(listGames());
+				} else if (words[0].toUpperCase().equals("CREATE")) {
+					if (uid < 0) {
+						println("You must be logged in to create a game");
+					} else {
+						SetGame g;
+						if (words.length == 1) {
+							g = new SetGame(uid);
+						} else {
+							g = new SetGame(uid, Integer.parseInt(words[1]));
+						}
+						gid = SetServer.master.addGame(g);
+					}
 				} else {
 					println("Unrecognized command!");
 				}
@@ -117,5 +137,18 @@ public class ServerThread extends Thread {
 
 	public String getUsername() {
 		return username;
+	}
+
+	public String listGames() {
+		String res = "";
+		HashMap<Integer, SetGame> gs = SetServer.master.getGames();
+
+		for (Entry<Integer, SetGame> hme : gs.entrySet()) {
+			SetGame g = hme.getValue();
+			res += hme.getKey() + ": " + SetServer.master.getUsernameFromId(g.getOwner()) + "'s room (" + g.getCurrCap()
+					+ "/" + g.getMaxCap() + ")\r\n";
+		}
+
+		return res;
 	}
 }
