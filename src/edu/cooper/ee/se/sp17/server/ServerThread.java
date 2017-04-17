@@ -19,6 +19,7 @@ public class ServerThread extends Thread {
 	private int uid;
 
 	private int gid;
+	private boolean ingame = false;
 
 	public ServerThread(Socket s) {
 		sock = s;
@@ -44,6 +45,7 @@ public class ServerThread extends Thread {
 					return;
 				}
 
+					// LOGIN
 				String words[] = line.split("[ \t]");
 				if (words[0].toUpperCase().startsWith("LOGIN")) {
 					if (words.length == 3) {
@@ -61,12 +63,18 @@ public class ServerThread extends Thread {
 					println("User " + username + " has uid of " + uid);
 				} else if (words[0].toUpperCase().equals("LOGOUT")) {
 					println(logout());
+				
+					// GAMES
 				} else if (words[0].toUpperCase().equals("GAMES")) {
 					print(listGames());
 				} else if (words[0].toUpperCase().equals("CREATE")) {
-					if (uid < 0) {
+					if (uid < 0)
 						println("You must be logged in to create a game");
-					} else {
+					else if(ingame)
+						println("You are playing a game");
+					else if(gid > 0)
+						println("You are already in a game");
+					else {
 						SetGame g;
 						if (words.length == 1) {
 							g = new SetGame(uid);
@@ -74,6 +82,55 @@ public class ServerThread extends Thread {
 							g = new SetGame(uid, Integer.parseInt(words[1]));
 						}
 						gid = SetServer.master.addGame(g);
+						println("Your game number is " + gid);
+					}
+				} else if (words[0].toUpperCase().equals("LEAVE")){
+					if(gid < 0)
+						println("You are not in a game");
+					else{
+						SetGame sg = SetServer.master.getGame(gid);
+						if(sg.getOwner() == uid){
+							SetServer.master.removeGame(gid);
+							gid = -1;
+						}else{
+							sg.remove(uid);
+							gid = -1;
+						}
+					}
+				} else if (words[0].toUpperCase().equals("JOIN")){
+					if(words.length != 2)
+						println("Invalid JOIN command");
+					else if(uid < 0)
+						println("You must be logged in to create a game");
+					else if(ingame)
+						println("You are playing a game");
+					else if(gid > 0)
+						println("You are already in a game");
+					else{
+						gid = Integer.parseInt(words[1]);
+						SetGame sg = SetServer.master.getGame(gid);
+						sg.join(uid);
+					}
+				} else if (words[0].toUpperCase().equals("START")){
+					if(uid < 0)
+						println("You must be logged in to start a game");
+					else if(gid < 0)
+						println("You are not in a game");
+					else if(ingame)
+						println("You are playing a game");
+					else{
+						SetGame sg = SetServer.master.getGame(gid);
+						if(sg.getOwner() == uid)
+							sg.start(gid);
+						else
+							println("You can't start this game. It is not yours");
+					}
+					
+					// IN-GAME
+				} else if (ingame){
+					if(words[0].toUpperCase().equals("BOARD")){
+						SetGame sg = SetServer.master.getGame(gid);
+						print(sg.getBoard());
 					}
 				} else {
 					println("Unrecognized command!");
@@ -85,6 +142,10 @@ public class ServerThread extends Thread {
 			return;
 		}
 	}
+	
+	public void setIngame(boolean ig){
+		ingame = ig;
+	}
 
 	private String logout() {
 		if (uid >= 0) {
@@ -92,7 +153,6 @@ public class ServerThread extends Thread {
 			username = null;
 			return "User logged out successfully";
 		}
-
 		return "Not logged in";
 	}
 
@@ -100,39 +160,46 @@ public class ServerThread extends Thread {
 		switch (SetServer.master.register(un, pw)) {
 		case SetServer.R_ERR_USER_EXISTS:
 			return "User already exists";
-		case SetServer.R_ERR_INTERNAL:
-			return "Internal error";
+		case SetServer.R_ERR_DATABASE:
+			return "Database error";
 		default:
 			return "User registered successfully";
 		}
 	}
 
 	private String login(String un, String pwh) {
+		if(uid >= 0)
+			return "Already logged in. Please logout first";
+
 		uid = SetServer.master.login(un, pwh);
 		switch (uid) {
 		case SetServer.L_ERR_ALRDY_IN:
 			return "User already logged in";
 		case SetServer.L_ERR_INVALID_CREDS:
 			return "Invalid user credentials";
-		case SetServer.L_ERR_INTERNAL:
-			return "Internal error";
+		case SetServer.L_ERR_DATABASE:
+			return "Database error";
 		default:
 			username = un;
 			return "User logged in successfully";
 		}
 	}
 
-	private void print(String s) throws IOException {
+	public void print(String s) throws IOException {
 		out.writeBytes(s);
 		out.flush();
 	}
 
-	private void println(String s) throws IOException {
+	public void println(String s) throws IOException {
 		print(s + "\r\n");
 	}
 
 	public int getUid() {
 		return uid;
+	}
+	
+	public int getGid(){
+		return gid;
 	}
 
 	public String getUsername() {
@@ -145,10 +212,10 @@ public class ServerThread extends Thread {
 
 		for (Entry<Integer, SetGame> hme : gs.entrySet()) {
 			SetGame g = hme.getValue();
-			res += hme.getKey() + ": " + SetServer.master.getUsernameFromId(g.getOwner()) + "'s room (" + g.getCurrCap()
-					+ "/" + g.getMaxCap() + ")\r\n";
+			res += hme.getKey() + ": " + SetServer.master.getUsernameFromId(g.getOwner()) + "'s game (" + g.getCurrCap()
+					+ "/" + g.getMaxCap() + ")" + ((hme.getKey() == gid)?"*\r\n":"\r\n");
 		}
-
+		res += "--END--\r\n";
 		return res;
 	}
 }
