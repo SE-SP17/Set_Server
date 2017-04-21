@@ -91,6 +91,7 @@ public class ServerThread extends Thread {
 						SetGame sg = SetServer.master.getGame(gid);
 						if(sg.getOwner() == uid){
 							SetServer.master.removeGame(gid);
+							SetServer.master.sendMsg(gid, -1, "Leaving game\r\n");
 							gid = -1;
 						}else{
 							sg.remove(uid);
@@ -129,8 +130,11 @@ public class ServerThread extends Thread {
 					// IN-GAME
 				} else if (ingame){
 					if(words[0].toUpperCase().equals("BOARD")){
-						SetGame sg = SetServer.master.getGame(gid);
-						print(sg.getBoard());
+						print(SetServer.master.getGame(gid).getBoard());
+					}else if(words[0].toUpperCase().equals("SET")){
+						if(words.length < 4)
+							println("SET needs 3 cards");
+						print(SetServer.master.getGame(gid).set(uid, Integer.parseInt(words[1]), Integer.parseInt(words[2]), Integer.parseInt(words[3])));
 					}
 				} else {
 					println("Unrecognized command!");

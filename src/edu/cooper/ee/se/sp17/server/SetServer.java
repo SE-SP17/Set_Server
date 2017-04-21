@@ -145,6 +145,20 @@ public class SetServer {
 		// but index changes as elements are added/removed
 		System.out.printf("A Connection terminated\n");
 		threads.remove(st);
+
+		// If in a game
+		if (st.getGid() > 0) {
+			SetGame sg = games.get(st.getGid());
+			sendMsg(st.getGid(), -1, "User " + getUsernameFromId(st.getUid()) + " has left the game\r\n");
+			sg.remove(st.getUid());
+
+			// If owner of game
+			if (st.getGid() == st.getUid()) {
+				sendMsg(st.getGid(), -1, "This game will end\r\n");
+				sg.removeAll();
+			}
+			removeGame(st.getGid());
+		}
 	}
 
 	public String getUsernameFromId(int uid) {
@@ -162,6 +176,8 @@ public class SetServer {
 	}
 
 	public void removeGame(int gid) {
+		SetGame sg = games.get(gid);
+		//for(ServerThread st : sg.)
 		games.remove(gid);
 	}
 
