@@ -53,16 +53,16 @@ public class ServerThread extends Thread {
 						SetServer.master.terminate(this);
 					sock.close();
 					return;
-				}else if(line.equals(""))
+				}
+				if(line.equals(""))
 					continue;
-
 				String words[] = line.split("[ \t]");
                 String output = SetServer.master.processQuery(this, words);
-                if(output.equals(""))
-                	continue;
-                else if(output != null)
+                if(output != null) {
+                    if(output.equals(""))
+                    	continue;
                     println(output);
-                else
+				}else
                 	println("Unrecognized command!");
 			}
 		} catch (IOException e) {
