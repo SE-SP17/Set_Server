@@ -36,6 +36,7 @@ public class Card {
 		color = rn.nextInt(3)+1;
 		num = rn.nextInt(3)+1;
 		shade = rn.nextInt(3)+1;
+		shape = color = num = shade; // Test
 	}
 	
 	public String toString(){

@@ -73,6 +73,7 @@ public class GameServer {
 			if(p.getGid() > 0)						return"You are already in a game";
 			Game g = games.get(Integer.parseInt(cmd[1]));
 			if(g == null)							return "No game found with such id";
+			if(g.getCurrCap() == g.getMaxCap())		return "Game is already full";
 			g.join(p);
 													return "You joined a game";
 		}

@@ -58,7 +58,9 @@ public class ServerThread extends Thread {
 
 				String words[] = line.split("[ \t]");
                 String output = SetServer.master.processQuery(this, words);
-                if(output != null)
+                if(output.equals(""))
+                	continue;
+                else if(output != null)
                     println(output);
                 else
                 	println("Unrecognized command!");

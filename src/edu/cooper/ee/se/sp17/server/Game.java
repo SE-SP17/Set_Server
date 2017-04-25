@@ -47,7 +47,7 @@ public class Game {
 	}	
 
 	public void removeAll(){
-		SetServer.master.sendMsg(getPlayersArray(), "You've left a game");
+		SetServer.master.sendMsg(getPlayersArray(), "You've left a game\r\n");
 		for(Player p : players){
 			p.setGid(-1);
 		}
@@ -64,8 +64,10 @@ public class Game {
 
 	public String start() {
 		started = true;
-		//SetServer.master.startAll(gid);
-		SetServer.master.sendMsg(getPlayersArray(), "Game started!");
+		for(Player p : players){
+			p.setScore(0);
+		}
+		SetServer.master.sendMsg(getPlayersArray(), "Game started!\r\n");
 		return "";
 	}
 	
@@ -147,11 +149,10 @@ public class Game {
 			
 			o += a + ": " + board.get(a).toString() + "\r\n";
 			o += b + ": " + board.get(b).toString() + "\r\n";
-			o += c + ": " + board.get(c).toString();
+			o += c + ": " + board.get(c).toString() + "\r\n";
 			Player p = getPlayer(u);
 			p.point();
-			SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has got a set ("+a+","+b+","+c+")");
-			SetServer.master.sendMsg(getPlayersArray(), o);
+			SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has got a set ("+a+","+b+","+c+")\r\n"+o);
 			return "";
 		}
 		return "Cards " + a + ", " + b + ", and " + c + " is not a set";

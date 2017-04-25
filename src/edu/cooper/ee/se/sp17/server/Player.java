@@ -41,8 +41,12 @@ public class Player {
 	public void point(){
 		score++;
 	}
-	
+
 	public int getScore(){
 		return score;
+	}
+	
+	public void setScore(int s){
+		score = s;
 	}
 }
