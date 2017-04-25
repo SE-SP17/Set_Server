@@ -35,14 +35,12 @@ public class Game {
 	}
 	
 	public void join(Player p){
-		SetServer.master.sendMsg(p.getUid(), "You've joined a game\r\n");
 		SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has joined the game\r\n");
 		players.add(p);
 		p.setGid(uid_owner);
 	}
 
 	public void remove(Player p){
-		SetServer.master.sendMsg(p.getUid(), "You've left a game\r\n");
 		players.remove(p);
 		SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has left the game\r\n");
 		p.setGid(-1);
@@ -160,22 +158,19 @@ public class Game {
 	}
 
 	public String process(int uid, String[] cmd) {
-		if(cmd[0].toUpperCase().equals("BOARD"))
-			return getBoard();
-		
+		if(cmd[0].toUpperCase().equals("BOARD"))	return getBoard();
 		if(cmd[0].toUpperCase().equals("SET")){
-			if(cmd.length < 4)	return "SET needs 3 cards";
-			return set(uid, Integer.parseInt(cmd[1]), Integer.parseInt(cmd[2]), Integer.parseInt(cmd[3]));
+			if(cmd.length < 4)						return "SET needs 3 cards";
+													return set(uid, Integer.parseInt(cmd[1]), Integer.parseInt(cmd[2]), Integer.parseInt(cmd[3]));
 		}
-		
-		if(cmd[0].toUpperCase().equals("SCORE")){
-			return scores();
-		}
-		return null;
+		if(cmd[0].toUpperCase().equals("SCORE"))	return scores();
+													return null; // NO commands found
 	}
 
 	private String scores() {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "";
+		for(Player p : players)
+			s += p.getUsername() + " - " + p.getScore() + "\r\n";
+		return s.substring(0, s.length()-2);
 	}
 }

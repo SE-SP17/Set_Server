@@ -223,11 +223,10 @@ public class SetServer {
      */
     public String processQuery(ServerThread c, String[] cmd){
 		if (cmd[0].toUpperCase().equals("LOGIN")) {
-			if (cmd.length != 3)	return "Invalid LOGIN command!";
-			if(c.getUid() >= 0)		return "Already logged in. Please logout first";
+			if (cmd.length != 3)					return "Invalid LOGIN command!";
+			if(c.getUid() >= 0)						return "Already logged in. Please logout first";
 
 			int uid = SetServer.master.login(cmd[1], cmd[2]);
-			
 			switch (uid) {
 				case SetServer.L_ERR_ALRDY_IN:		return "User already logged in";
 				case SetServer.L_ERR_INVALID_CREDS:	return "Invalid user credentials";
@@ -236,32 +235,33 @@ public class SetServer {
 					c.setUid(uid);
 					gserver.login(uid, cmd[1]);
 					System.out.printf("User %s logged in from %s\n", cmd[1], c.getSocket().getInetAddress().getHostAddress());
-					return "User logged in successfully";
+													return "User logged in successfully";
 			}
-		} else if (cmd[0].toUpperCase().equals("REGISTER")) {
+		}
+		if (cmd[0].toUpperCase().equals("REGISTER")) {
 			if (cmd.length != 3)
-				return "Invalid REGISTER command!";
+													return "Invalid REGISTER command!";
 			
 			switch (SetServer.master.register(cmd[1], cmd[2])) {
 				case SetServer.R_ERR_USER_EXISTS:	return "User already exists";
 				case SetServer.R_ERR_DATABASE:		return "Database error";
 				default:							return "User registered successfully";
 			}
-		} else if (cmd[0].toUpperCase().equals("WHOAMI")) {
+		}
+		if (cmd[0].toUpperCase().equals("WHOAMI")) {
 			int uid = c.getUid();
 			String un = gserver.getUsername(uid);
-			return "User " + un + " has uid of " + uid;
-		} else if (cmd[0].toUpperCase().equals("LOGOUT")) {
+													return "User " + un + " has uid of " + uid;
+		}
+		if (cmd[0].toUpperCase().equals("LOGOUT")) {
 			if (c.getUid() >= 0) {
 				gserver.logout(c.getUid());
 				c.setUid(-1);
-				return "User logged out successfully";
+													return "User logged out successfully";
 			}
-			return "Not logged in";
-		}else if(c.getUid() < 0){
-			return "Please log in first";
-		}else{
-			return gserver.process(c.getUid(), cmd);
+													return "Not logged in";
 		}
+		if(c.getUid() < 0)							return "Please log in first";
+													return gserver.process(c.getUid(), cmd);
     }
 }

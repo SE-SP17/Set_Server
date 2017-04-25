@@ -50,48 +50,49 @@ public class GameServer {
 				res += String.format("%d: %s's game (%d/%d)%s\r\n", hme.getKey(), getUsername(g.getOwner()), g.getCurrCap(), g.getMaxCap(), ((hme.getKey() == p.getGid())?"*":""));
 			}
 			res += "--END--";
-			return res;
-		} else if (cmd[0].toUpperCase().equals("CREATE")) {
-			if(p.getGid() > 0)	return "You are already in a game";
-			
+													return res;
+		}
+		if (cmd[0].toUpperCase().equals("CREATE")) {
+			if(p.getGid() > 0)						return "You are already in a game";
             Game g = (cmd.length == 1)? new Game(p) : new Game(p, Integer.parseInt(cmd[1]));
 			games.put(uid, g);
-			return "Your game number is " + p.getGid();
-		} else if (cmd[0].toUpperCase().equals("LEAVE")){
-			if(p.getGid() < 0)	return "You are not in a game";
-			
+													return "Your game number is " + p.getGid();
+		}
+		if (cmd[0].toUpperCase().equals("LEAVE")){
+			if(p.getGid() < 0)						return "You are not in a game";
 			Game g = games.get(p.getGid());
+			g.remove(p);
 			if(g.getOwner() == uid){
 				g.removeAll();
 				games.remove(uid);
-			}else{
-				g.remove(p);
 			}
-			return "";
-		} else if (cmd[0].toUpperCase().equals("JOIN")){
-			if(cmd.length != 2)	return "Invalid JOIN command";
-			if(p.getGid() > 0)	return"You are already in a game";
-			
+													return "You left a game";
+		}
+		if (cmd[0].toUpperCase().equals("JOIN")) {
+			if(cmd.length != 2)						return "Invalid JOIN command";
+			if(p.getGid() > 0)						return"You are already in a game";
 			Game g = games.get(Integer.parseInt(cmd[1]));
-			if(g == null)		return "No game found with such id";
+			if(g == null)							return "No game found with such id";
 			g.join(p);
-			return "";
-		} else if (cmd[0].toUpperCase().equals("START")){
-			if(p.getGid() < 0)							return "You are not in a game";
-			else if(games.get(p.getGid()).isStarted())	return "You are already playing a game";
-			else if(p.getGid() != p.getUid())			return "You can't start this game. It is not yours";
-			else										return games.get(p.getGid()).start();
-		} else if(cmd[0].toUpperCase().equals("LIST")){
-			if(p.getGid() < 0)							return "You are not in a game";
+													return "You joined a game";
+		}
+		if (cmd[0].toUpperCase().equals("START")) {
+			if(p.getGid() < 0)						return "You are not in a game";
+			if(games.get(p.getGid()).isStarted())	return "You are already playing a game";
+			if(p.getGid() != p.getUid())			return "You can't start this game. It is not yours";
+													return games.get(p.getGid()).start();
+		}
+		if(cmd[0].toUpperCase().equals("LIST")) {
+			if(p.getGid() < 0)						return "You are not in a game";
 			ArrayList<Player> pl = games.get(p.getGid()).getPlayers();
 			String l = "";
 			for(Player cp : pl)
 				l += cp.getUid() + ": " + cp.getUsername() + "\r\n";
-			return l.substring(0, l.length()-2);
-		} else if(p.getGid() < 0 || !games.get(p.getGid()).isStarted())
-			return "You're not playing a game";
-		else
-			return games.get(p.getGid()).process(uid, cmd);
+													return l.substring(0, l.length()-2); // Removes last \r\n
+		}
+		if(p.getGid() < 0 || !games.get(p.getGid()).isStarted())
+													return "You're not playing a game";
+													return games.get(p.getGid()).process(uid, cmd);
 	}
 
 	public String getUsername(int uid) {
@@ -101,7 +102,6 @@ public class GameServer {
 		else
 			return p.getUsername();
 	}
-	
 	
 	public void removeGame(int gid) {
 		Game g = games.get(gid);
