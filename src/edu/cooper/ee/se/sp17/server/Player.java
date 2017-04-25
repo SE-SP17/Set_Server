@@ -4,11 +4,13 @@ public class Player {
 
 	private int uid, gid;
 	private String username;
+	private int score;
 
 	public Player(int uid, String username){
 		this.uid = uid;
 		this.username = username;
 		gid = -1;
+		score = 0;
 	}
 
 	// Getters and Setters
@@ -34,5 +36,13 @@ public class Player {
 
 	public void setGid(int gid) {
 		this.gid = gid;
+	}
+	
+	public void point(){
+		score++;
+	}
+	
+	public int getScore(){
+		return score;
 	}
 }
