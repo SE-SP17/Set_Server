@@ -2,7 +2,7 @@ package edu.cooper.ee.se.sp17.server;
 
 import java.util.Random;
 
-public class SetCard {
+public class Card {
 	public static int S_OVAL = 1;
 	public static int S_SQUG = 2;
 	public static int S_DIAM = 3;
@@ -20,14 +20,14 @@ public class SetCard {
 	public int shape, color, num, shade;
 	Random rn = new Random();
 	
-	public SetCard(int shp, int c, int n, int shd){
+	public Card(int shp, int c, int n, int shd){
 		shape = shp;
 		color = c;
 		num = n;
 		shade = shd;
 	}
 	
-	public SetCard(){
+	public Card(){
 		random();
 	}
 	

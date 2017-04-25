@@ -193,6 +193,10 @@ public class SetServer {
         // Success!
 		return 0;
 	}
+	
+	public boolean isConnected(ServerThread st){
+		return connections.contains(st);
+	}
 
     /**
      * This method is (should be) called when a
@@ -205,7 +209,8 @@ public class SetServer {
 		connections.remove(st);
 
         // Call method in game server to handle stuff
-        /* TODO */
+		if(st.getUid() > 0)
+			gserver.logout(st.getUid());
 	}
 
     /**
@@ -217,13 +222,9 @@ public class SetServer {
      * @return res Resulting message from processing query.
      */
     public String processQuery(ServerThread c, String[] cmd){
-        /* TODO */
 		if (cmd[0].toUpperCase().equals("LOGIN")) {
-			if (cmd.length != 3) 
-				return "Invalid LOGIN command!";
-			
-			if(c.getUid() >= 0)
-				return "Already logged in. Please logout first";
+			if (cmd.length != 3)	return "Invalid LOGIN command!";
+			if(c.getUid() >= 0)		return "Already logged in. Please logout first";
 
 			int uid = SetServer.master.login(cmd[1], cmd[2]);
 			
@@ -234,6 +235,7 @@ public class SetServer {
 				default:
 					c.setUid(uid);
 					gserver.login(uid, cmd[1]);
+					System.out.printf("User %s logged in from %s\n", cmd[1], c.getSocket().getInetAddress().getHostAddress());
 					return "User logged in successfully";
 			}
 		} else if (cmd[0].toUpperCase().equals("REGISTER")) {
@@ -247,7 +249,7 @@ public class SetServer {
 			}
 		} else if (cmd[0].toUpperCase().equals("WHOAMI")) {
 			int uid = c.getUid();
-			String un = ""; /* TODO */ // Get username from GameServer and uid
+			String un = gserver.getUsername(uid);
 			return "User " + un + " has uid of " + uid;
 		} else if (cmd[0].toUpperCase().equals("LOGOUT")) {
 			if (c.getUid() >= 0) {
@@ -262,54 +264,4 @@ public class SetServer {
 			return gserver.process(c.getUid(), cmd);
 		}
     }
-
-    // Move to game server
-    /*
-	public String getUsernameFromId(int uid) {
-		for (ServerThread st : connections) {
-			if (st.getUid() == uid) {
-				return st.getUsername();
-			}
-		}
-		return null;
-	}
-
-	public int addGame(SetGame sg) {
-		games.put(gid, sg);
-		return gid++;
-	}
-
-	public void removeGame(int gid) {
-		SetGame sg = games.get(gid);
-		//for(ServerThread st : sg.)
-		games.remove(gid);
-	}
-
-	public SetGame getGame(int gid) {
-		return games.get(gid);
-	}
-
-	public void startAll(int gid) {
-		sendMsg(gid, -1, "Game starting\r\n");
-		for (ServerThread st : connections) {
-			st.setIngame(true);
-		}
-	}
-    */
-
-
-    /* MOVE TO GAMESERVER
-	public String listGames() {
-		String res = "";
-		HashMap<Integer, SetGame> gs = SetServer.master.getGames();
-
-		for (Entry<Integer, SetGame> hme : gs.entrySet()) {
-			SetGame g = hme.getValue();
-			res += hme.getKey() + ": " + SetServer.master.getUsernameFromId(g.getOwner()) + "'s game (" + g.getCurrCap()
-					+ "/" + g.getMaxCap() + ")" + ((hme.getKey() == gid)?"*\r\n":"\r\n");
-		}
-		res += "--END--\r\n";
-		return res;
-	}
-    */
 }

@@ -49,10 +49,12 @@ public class ServerThread extends Thread {
 				line = in.readLine();
 				if (line == null || line.toUpperCase().startsWith("BYEBYE")) {
 					println("Goodbye!");
-					SetServer.master.terminate(this);
+					if(SetServer.master.isConnected(this)) // ^C would terminate connection if the above line
+						SetServer.master.terminate(this);
 					sock.close();
 					return;
-				}
+				}else if(line.equals(""))
+					continue;
 
 				String words[] = line.split("[ \t]");
                 String output = SetServer.master.processQuery(this, words);
