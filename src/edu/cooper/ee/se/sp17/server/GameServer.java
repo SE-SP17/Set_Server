@@ -26,6 +26,8 @@ public class GameServer {
 		System.out.printf("User %s logged out\n", getUsername(uid));
 		if(p != null){
 			Game g = games.get(p.getGid());
+			if(g == null)
+				return;
 			if(g.getOwner() == uid){
 				g.removeAll();
 				games.remove(uid);
@@ -61,7 +63,8 @@ public class GameServer {
 		if (cmd[0].toUpperCase().equals("LEAVE")){
 			if(p.getGid() < 0)						return "You are not in a game";
 			Game g = games.get(p.getGid());
-			g.end();
+			if(g.isStarted())
+				g.end();
 			g.remove(p);
 			if(g.getOwner() == uid){
 				g.removeAll();
@@ -91,6 +94,15 @@ public class GameServer {
 			for(Player cp : pl)
 				l += cp.getUid() + ": " + cp.getUsername() + "\r\n";
 													return l.substring(0, l.length()-2); // Removes last \r\n
+		}
+		if (cmd[0].toUpperCase().equals("MSG")){
+			if(p.getGid() < 0)						return "You are not in a game";
+			int[] d = {Integer.parseInt(cmd[1])};
+			String msg = "";
+			for(int x = 2; x < cmd.length; x++)
+				msg += cmd[x]+" ";
+			SetServer.master.sendMsg(d, "From " +uid+": "+cmd[2]+"\r\n");
+													return "Message sent to user "+cmd[1];
 		}
 		if(p.getGid() < 0 || !games.get(p.getGid()).isStarted())
 													return "You're not playing a game";
