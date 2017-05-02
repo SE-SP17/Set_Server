@@ -7,12 +7,8 @@ package edu.cooper.ee.se.sp17.server;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class ServerThread extends Thread {
 	private Socket sock;

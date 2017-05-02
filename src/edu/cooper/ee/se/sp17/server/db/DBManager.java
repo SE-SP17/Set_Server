@@ -7,7 +7,7 @@ public class DBManager {
 	private final static String DB_USER = "set_server";
 	private final static String DB_PASS = "sable";
 	private final static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private final static String DB_URL = "jdbc:mysql://sable08.ee.cooper.edu/set_server";
+	private final static String DB_URL = "jdbc:mysql://sable08.ee.cooper.edu/set_server?autoReconnect=true";
 
 	private static Connection conn = null;
 

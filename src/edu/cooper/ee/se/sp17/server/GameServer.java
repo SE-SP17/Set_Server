@@ -101,7 +101,7 @@ public class GameServer {
 			String msg = "";
 			for(int x = 2; x < cmd.length; x++)
 				msg += cmd[x]+" ";
-			SetServer.master.sendMsg(d, "From " +uid+": "+cmd[2]+"\r\n");
+			SetServer.master.sendMsg(d, "From " +uid+": "+msg+"\r\n");
 													return "Message sent to user "+cmd[1];
 		}
 		if(p.getGid() < 0 || !games.get(p.getGid()).isStarted())
