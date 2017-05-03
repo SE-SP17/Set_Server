@@ -119,7 +119,7 @@ public class Game {
 		String b = "";
 		for(Entry<Integer,Card> hme : board.entrySet())
 			b += hme.getKey() + ": " + hme.getValue().toString() + "\r\n";
-		b = b.substring(0, b.length()-2);
+		//b = b.substring(0, b.length()-2);
 		return b;
 	}
 	
@@ -233,7 +233,7 @@ public class Game {
 	}
 
 	public String process(int uid, String[] cmd) {
-		if(cmd[0].toUpperCase().equals("BOARD"))	return getBoard();
+		if(cmd[0].toUpperCase().equals("BOARD"))	return getBoard()+"--END--";
 		if(cmd[0].toUpperCase().equals("SET")){
 			if(cmd.length < 4)						return "SET needs 3 cards";
 													return set(uid, Integer.parseInt(cmd[1]), Integer.parseInt(cmd[2]), Integer.parseInt(cmd[3]));
