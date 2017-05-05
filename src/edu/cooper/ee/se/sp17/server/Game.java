@@ -249,14 +249,14 @@ public class Game {
 
 	private void win(int uid) {
 		if(uid == 0)
-			SetServer.master.sendMsg(getPlayersArray(), "There was no winner\r\nThe final scores are:\r\n"+scores()+"\r\n");			
+			SetServer.master.sendMsg(getPlayersArray(), "There was no winner\r\nThe final scores are:\r\n"+scores()+"\r\n--END--\r\n");			
 		else
-			SetServer.master.sendMsg(getPlayersArray(), getPlayer(uid).getUsername() + " Won!\r\nThe final scores are:\r\n"+scores()+"\r\n");
+			SetServer.master.sendMsg(getPlayersArray(), getPlayer(uid).getUsername() + " Won!\r\nThe final scores are:\r\n"+scores()+"\r\n--END--\r\n");
 		started = false;
 	}
 
 	private void end(int uid) {
-		SetServer.master.sendMsg(getPlayersArray(), getPlayer(uid).getUsername() + " has ended the game\r\nThe final scores are:\r\n"+scores()+"\r\n");
+		SetServer.master.sendMsg(getPlayersArray(), getPlayer(uid).getUsername() + " has ended the game\r\nThe final scores are:\r\n"+scores()+"\r\n--END--\r\n");
 		started = false;
 	}
 
@@ -333,7 +333,7 @@ public class Game {
 	}
 
 	public void end() {
-		SetServer.master.sendMsg(getPlayersArray(), "Game has ended\r\nThe final scores are:\r\n"+scores()+"\r\n");
+		SetServer.master.sendMsg(getPlayersArray(), "Game has ended\r\nThe final scores are:\r\n"+scores()+"\r\n--END--\r\n");
 		started = false;
 	}
 

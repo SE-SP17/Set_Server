@@ -43,6 +43,7 @@ public class ServerThread extends Thread {
 			String line;
 			while (true) {
 				line = in.readLine();
+				System.out.println("A User said: " + line);
 				if (line == null || line.toUpperCase().startsWith("BYEBYE")) {
 					println("Goodbye!");
 					if(SetServer.master.isConnected(this)) // ^C would terminate connection if the above line
