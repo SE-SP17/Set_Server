@@ -323,12 +323,12 @@ public class Game {
 		board.put(c, deck.get(j));
 		deck.remove(j);
 
-		String o = "";
-		o += a + ": " + board.get(a).toString() + "\r\n";
-		o += b + ": " + board.get(b).toString() + "\r\n";
-		o += c + ": " + board.get(c).toString() + "\r\n";
-		
-		SetServer.master.sendMsg(getPlayersArray(), o);
+//		String o = "";
+//		o += a + ": " + board.get(a).toString() + "\r\n";
+//		o += b + ": " + board.get(b).toString() + "\r\n";
+//		o += c + ": " + board.get(c).toString() + "\r\n";
+				
+//		SetServer.master.sendMsg(getPlayersArray(), o);
 		return "";
 	}
 
