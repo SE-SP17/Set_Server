@@ -225,7 +225,7 @@ public class Game {
 			}
 			
 			p.point();
-			SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has got a set ("+a+","+b+","+c+")\r\n"+o);
+			SetServer.master.sendMsg(getPlayersArray(), "Player "+p.getUsername()+" has got a set ("+a+","+b+","+c+")\r\n");
 			return "";
 		}
 		p.depoint();
