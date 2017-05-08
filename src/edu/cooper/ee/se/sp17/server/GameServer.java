@@ -63,10 +63,10 @@ public class GameServer {
 		if (cmd[0].toUpperCase().equals("LEAVE")){
 			if(p.getGid() < 0)						return "You are not in a game";
 			Game g = games.get(p.getGid());
-			if(g.isStarted())
-				g.end();
 			g.remove(p);
 			if(g.getOwner() == uid){
+				if(g.isStarted())
+					g.end();
 				g.removeAll();
 				games.remove(uid);
 			}
