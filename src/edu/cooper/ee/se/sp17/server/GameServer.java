@@ -97,12 +97,15 @@ public class GameServer {
 		}
 		if (cmd[0].toUpperCase().equals("MSG")){
 			if(p.getGid() < 0)						return "You are not in a game";
-			int[] d = {Integer.parseInt(cmd[1])};
+//			int[] d = {Integer.parseInt(cmd[1])};
+			Game g = games.get(p.getGid());
 			String msg = "";
-			for(int x = 2; x < cmd.length; x++)
+			for(int x = 1; x < cmd.length; x++)
 				msg += cmd[x]+" ";
-			SetServer.master.sendMsg(d, "From " +uid+": "+msg+"\r\n");
-													return "Message sent to user "+cmd[1];
+			String un = getPlayer(uid).getUsername();
+			SetServer.master.sendMsg(g.getPlayersArray(), "From " +un+": "+msg+"\r\n");
+													//return "Message sent to user "+cmd[1];
+													return "";			
 		}
 		if(p.getGid() < 0 || !games.get(p.getGid()).isStarted())
 													return "You're not playing a game";
